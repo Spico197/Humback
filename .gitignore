@@ -163,3 +163,5 @@ cython_debug/
 debug.ipynb
 debug.json
 data/seed/*.jsonl
+data/unlabelled/*.jsonl
+nohup.out
