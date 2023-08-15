@@ -5,7 +5,6 @@ Here is the original license:
     https://github.com/lm-sys/FastChat/blob/main/LICENSE
 """
 
-import json
 import math
 import pathlib
 from dataclasses import dataclass, field
@@ -14,6 +13,7 @@ from typing import Dict, Optional
 
 import torch
 import transformers
+from rex.utils.io import load_jsonlines
 from fastchat.conversation import SeparatorStyle
 from fastchat.model.model_adapter import get_conversation_template
 from torch.optim.lr_scheduler import LambdaLR
@@ -145,7 +145,7 @@ def preprocess(
     sources,
     tokenizer: transformers.PreTrainedTokenizer,
 ) -> Dict:
-    conv = get_conversation_template("llama-2")
+    conv = get_conversation_template("vicuna_v1.1")
     roles = {"human": conv.roles[0], "gpt": conv.roles[1]}
 
     # Apply prompt templates
@@ -314,15 +314,15 @@ def make_supervised_data_module(
     )
     rank0_print("Loading data...")
 
-    train_json = json.load(open(data_args.data_path, "r"))
+    train_data = load_jsonlines(data_args.data_path)
     train_dataset = dataset_cls(
-        train_json, tokenizer=tokenizer, reverse=data_args.reverse
+        train_data, tokenizer=tokenizer, reverse=data_args.reverse
     )
 
     if data_args.eval_data_path:
-        eval_json = json.load(open(data_args.eval_data_path, "r"))
+        eval_data = load_jsonlines(data_args.eval_data_path)
         eval_dataset = dataset_cls(
-            eval_json, tokenizer=tokenizer, reverse=data_args.reverse
+            eval_data, tokenizer=tokenizer, reverse=data_args.reverse
         )
     else:
         eval_dataset = None

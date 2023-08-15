@@ -165,3 +165,4 @@ debug.json
 data/seed/*.jsonl
 data/unlabelled/*.jsonl
 nohup.out
+outputs

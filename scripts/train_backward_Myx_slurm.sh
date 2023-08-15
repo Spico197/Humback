@@ -1,16 +1,37 @@
 #!/usr/bin/bash
 
-num_nodes=1
-num_gpu_per_node=8
+#SBATCH --job-name=backward
+#SBATCH --output=logs/%x-%j.log
+#SBATCH --error=logs/%x-%j.log
+
+#SBATCH --partition=Partition
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=256G
+#SBATCH -x SH-IDCA1404-10-140-54-116
+
+#SBATCH --nodes=1
+#SBATCH --gres=gpu:8
+
+
+source ~/anaconda3/bin/activate torch
+
+num_nodes=1         # should match with --nodes
+num_gpu_per_node=8  # should match with --gres
 
 bsz=32
-output_dir="outputs/seed_model"
+output_dir="outputs/$SLURM_JOB_NAME-$SLURM_JOB_ID"
 bsz_per_dev=$(echo "${bsz} / ${num_nodes} / ${num_gpu_per_node}" | bc)
 
-torchrun \
+srun torchrun \
     --nnodes ${num_nodes} \
     --nproc_per_node ${num_gpu_per_node} \
-    -m src.train_flash_attn \
+    --node_rank $SLURM_NODEID \
+    --rdzv_id $RANDOM \
+    --rdzv_backend c10d \
+    --rdzv_endpoint $head_node:29518 \
+    src/train_flash_attn.py \
+        --reverse \
         --deepspeed conf/ds_zero2default.json \
         --model_name_or_path /home/zhutong/Llama-2-7b-hf \
         --data_path data/seed/seed.jsonl \

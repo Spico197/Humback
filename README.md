@@ -33,6 +33,14 @@ $ python data/unlabelled/falcon_refinedweb.py
 
 ### Train Backward Model $M_{yx}$
 
+- 8 * A100 40GB
+- bf16
+- gradient checkpointing
+- deepspeed stage 2
+
+```bash
+$ bash scripts/train_backward_Myx.sh
+```
 
 ### Self-Augmentation via $M_{yx}$
 
