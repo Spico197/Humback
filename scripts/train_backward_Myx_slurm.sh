@@ -7,21 +7,30 @@
 #SBATCH --partition=Partition
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=32
-#SBATCH --mem=256G
+#SBATCH --mem=128G
 #SBATCH -x SH-IDCA1404-10-140-54-116
 
 #SBATCH --nodes=1
-#SBATCH --gres=gpu:8
+#SBATCH --gres=gpu:4
 
 
 source ~/anaconda3/bin/activate torch
 
-num_nodes=1         # should match with --nodes
-num_gpu_per_node=8  # should match with --gres
+num_nodes=1
+num_gpu_per_node=4
 
 bsz=32
-output_dir="outputs/$SLURM_JOB_NAME-$SLURM_JOB_ID"
+output_dir="outputs/backward_model_on_seed_data_scheduled_ds1"
+
+mkdir -p $output_dir
 bsz_per_dev=$(echo "${bsz} / ${num_nodes} / ${num_gpu_per_node}" | bc)
+
+nodes=( $( scontrol show hostnames $SLURM_JOB_NODELIS ) )
+nodes_array=($nodes)
+head_node=${nodes_array[0]}
+head_node_ip=$(srun --nodes=1 --ntasks=1 -w "$head_node" hostname --ip-address)
+echo "Node: $head_node"
+echo "Node IP: $head_node_ip"
 
 srun torchrun \
     --nnodes ${num_nodes} \
@@ -30,7 +39,7 @@ srun torchrun \
     --rdzv_id $RANDOM \
     --rdzv_backend c10d \
     --rdzv_endpoint $head_node:29518 \
-    src/train_flash_attn.py \
+    -m src.train_flash_attn \
         --reverse \
         --deepspeed conf/ds_zero2default.json \
         --model_name_or_path /home/zhutong/Llama-2-7b-hf \
@@ -48,7 +57,7 @@ srun torchrun \
         --logging_strategy steps \
         --logging_steps 1 \
         --save_strategy epoch \
-        --save_total_limit 3 \
+        --save_total_limit 1 \
         --output_dir ${output_dir} \
         --overwrite_output_dir \
         --ddp_timeout 30000 \
@@ -60,3 +69,6 @@ srun torchrun \
         --report_to none \
         --log_level info \
         --lazy_preprocess True
+
+        # --fsdp "full_shard auto_wrap" \
+        # --fsdp_config conf/fsdp_config.json \

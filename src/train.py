@@ -13,9 +13,9 @@ from typing import Dict, Optional
 
 import torch
 import transformers
-from rex.utils.io import load_jsonlines
 from fastchat.conversation import SeparatorStyle
 from fastchat.model.model_adapter import get_conversation_template
+from rex.utils.io import load_jsonlines
 from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import Dataset
 from transformers import Trainer
@@ -74,7 +74,11 @@ def _get_linear_schedule_with_warmup_lr_lambda(
 
 
 def get_linear_schedule_with_warmup(
-    optimizer, num_warmup_steps, num_training_steps, last_epoch=-1
+    optimizer,
+    num_warmup_steps,
+    num_training_steps,
+    last_epoch=-1,
+    final_lr: float = 1e-6,
 ):
     """
     Create a schedule with a learning rate that decreases linearly from the initial lr set in the optimizer to 0, after
@@ -98,6 +102,7 @@ def get_linear_schedule_with_warmup(
         _get_linear_schedule_with_warmup_lr_lambda,
         num_warmup_steps=num_warmup_steps,
         num_training_steps=num_training_steps,
+        final_lr=final_lr,
     )
     return LambdaLR(optimizer, lr_lambda, last_epoch)
 

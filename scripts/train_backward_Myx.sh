@@ -4,7 +4,9 @@ num_nodes=1
 num_gpu_per_node=8
 
 bsz=32
-output_dir="/dev/shm/tzhu/Humback/outputs/backward_model_on_seed_data_scheduled"
+output_dir="outputs/backward_model_on_seed_data_scheduled"
+
+mkdir -p $output_dir
 bsz_per_dev=$(echo "${bsz} / ${num_nodes} / ${num_gpu_per_node}" | bc)
 
 torchrun \
