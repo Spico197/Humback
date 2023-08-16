@@ -4,7 +4,7 @@ num_nodes=1
 num_gpu_per_node=8
 
 bsz=32
-output_dir="outputs/seed_model"
+output_dir="/dev/shm/tzhu/Humback/outputs/forward_model_on_seed_data_scheduled"
 bsz_per_dev=$(echo "${bsz} / ${num_nodes} / ${num_gpu_per_node}" | bc)
 
 torchrun \
@@ -27,7 +27,7 @@ torchrun \
         --logging_strategy steps \
         --logging_steps 1 \
         --save_strategy epoch \
-        --save_total_limit 3 \
+        --save_total_limit 1 \
         --output_dir ${output_dir} \
         --overwrite_output_dir \
         --ddp_timeout 30000 \
