@@ -4,19 +4,20 @@ num_nodes=1
 num_gpu_per_node=8
 
 bsz=32
-output_dir="/dev/shm/tzhu/Humback/outputs/forward_model_on_seed_data_scheduled"
+output_dir="/dev/shm/tzhu/outputs/forward_model_on_seed_data_scheduled"
+
+mkdir -p $output_dir
 bsz_per_dev=$(echo "${bsz} / ${num_nodes} / ${num_gpu_per_node}" | bc)
 
 torchrun \
     --nnodes ${num_nodes} \
     --nproc_per_node ${num_gpu_per_node} \
-    -m src.train_flash_attn \
+    -m src.core.train_flash_attn \
         --deepspeed conf/ds_zero2default.json \
         --model_name_or_path /home/zhutong/Llama-2-7b-hf \
         --data_path data/seed/seed.jsonl \
         --per_device_train_batch_size ${bsz_per_dev} \
         --per_device_eval_batch_size ${bsz_per_dev} \
-        --num_train_epochs 15 \
         --adam_beta1 0.9 \
         --adam_beta2 0.95 \
         --learning_rate "1e-5" \
@@ -26,7 +27,9 @@ torchrun \
         --evaluation_strategy "no" \
         --logging_strategy steps \
         --logging_steps 1 \
-        --save_strategy epoch \
+        --max_steps 500 \
+        --save_strategy steps \
+        --save_steps 100 \
         --save_total_limit 1 \
         --output_dir ${output_dir} \
         --overwrite_output_dir \

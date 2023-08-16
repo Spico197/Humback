@@ -39,7 +39,7 @@ srun torchrun \
     --rdzv_id $RANDOM \
     --rdzv_backend c10d \
     --rdzv_endpoint $head_node:29518 \
-    -m src.train_flash_attn \
+    -m src.core.train_flash_attn \
         --reverse \
         --deepspeed conf/ds_zero2default.json \
         --model_name_or_path /home/zhutong/Llama-2-7b-hf \
