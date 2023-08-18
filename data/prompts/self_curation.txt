@@ -7,5 +7,5 @@ Below is an instruction from an user and a candidate answer. Evaluate whether or
 
 Please first provide a brief reasoning you used to derive the rating score, and then write "Score: <rating>" in the last line.
 
-<generated instruction>
-<output>
+{generated_instruction}
+{response}

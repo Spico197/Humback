@@ -1,66 +1,13 @@
 import argparse
 
 import torch
-from torch.utils.data import Dataset, DataLoader
-from tqdm import tqdm
-from fastchat.conversation import Conversation
 from accelerate import Accelerator
-from transformers import (
-    PreTrainedTokenizer,
-    AutoModelForCausalLM,
-    AutoTokenizer,
-)
-from fastchat.model import get_conversation_template
+from torch.utils.data import DataLoader
+from tqdm import tqdm
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from src.utils.io import load_jsonlines, dump_jsonlines
-
-
-class CollateFn:
-    def __init__(self, tokenizer: PreTrainedTokenizer, max_seq_len: int = 2048) -> None:
-        self.tokenizer = tokenizer
-        self.max_seq_len = max_seq_len
-
-    def __call__(self, batch):
-        outputs = self.tokenizer(
-            batch,
-            return_tensors="pt",
-            max_length=self.max_seq_len,
-            padding=True,
-            truncation=True,
-        )
-        return outputs
-
-
-class InferenceDataset(Dataset):
-    def __init__(
-        self,
-        data,
-        tokenizer: PreTrainedTokenizer,
-        content_name: str = "content",
-        reverse: bool = False,
-        max_seq_len: int = 2048,
-    ):
-        self.data = data
-        self.reverse = reverse
-        self.content_name = content_name
-        self.tokenizer = tokenizer
-        self.max_seq_len = max_seq_len
-
-        if reverse:
-            self.conv: Conversation = get_conversation_template("vicuna_v1.1_reverse")
-        else:
-            self.conv: Conversation = get_conversation_template("vicuna_v1.1")
-
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        ins = self.data[idx]
-        self.conv.messages.clear()
-        self.conv.append_message(self.conv.roles[0], ins[self.content_name])
-        self.conv.append_message(self.conv.roles[1], None)
-        prompt = self.conv.get_prompt()
-        return prompt
+from src.data import CollateFnWithTokenization, InferenceDataset
+from src.utils.io import dump_jsonlines, load_jsonlines
 
 
 @torch.inference_mode()
@@ -82,14 +29,13 @@ def main(args):
 
     dataset = InferenceDataset(
         load_jsonlines(args.data_filepath),
-        tokenizer,
         content_name=args.prompt_column_name,
         reverse=args.reverse,
     )
     data_loader = DataLoader(
         dataset,
         batch_size=args.batch_size,
-        collate_fn=CollateFn(tokenizer),
+        collate_fn=CollateFnWithTokenization(tokenizer),
         shuffle=False,
     )
 

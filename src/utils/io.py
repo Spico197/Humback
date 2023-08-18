@@ -1,14 +1,16 @@
 import json
+from pathlib import Path
 
 import transformers
 
 
 def dump_jsonlines(obj, filepath, **kwargs):
+    path = Path(filepath)
+    path.parent.mkdir(parents=True, exist_ok=True)
+
     with open(filepath, "wt", encoding="utf-8") as fout:
         for d in obj:
-            line_d = json.dumps(
-                d, ensure_ascii=False, **kwargs
-            )
+            line_d = json.dumps(d, ensure_ascii=False, **kwargs)
             fout.write("{}\n".format(line_d))
 
 

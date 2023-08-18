@@ -1,11 +1,11 @@
 import torch
-from fastchat.conversation import SeparatorStyle, get_conversation_template
+from fastchat.conversation import Conversation, SeparatorStyle, get_conv_template
 from torch.utils.data import Dataset
 from transformers import PreTrainedTokenizer
 
+from src.utils.constant import IGNORE_TOKEN_ID
 from src.utils.io import load_jsonlines
 from src.utils.print import rank0_print
-from src.utils.constant import IGNORE_TOKEN_ID
 
 
 def preprocess(
@@ -14,9 +14,9 @@ def preprocess(
     reverse: bool = False,
 ) -> dict:
     if reverse:
-        conv = get_conversation_template("vicuna_v1.1_reverse")
+        conv = get_conv_template("vicuna_v1.1_reverse")
     else:
-        conv = get_conversation_template("vicuna_v1.1")
+        conv = get_conv_template("vicuna_v1.1")
     roles = {"human": conv.roles[0], "gpt": conv.roles[1]}
 
     # Apply prompt templates
@@ -198,3 +198,50 @@ def make_supervised_data_module(tokenizer: PreTrainedTokenizer, data_args) -> di
         eval_dataset = None
 
     return dict(train_dataset=train_dataset, eval_dataset=eval_dataset)
+
+
+class InferenceDataset(Dataset):
+    def __init__(
+        self,
+        data,
+        content_name: str = "content",
+        reverse: bool = False,
+    ):
+        self.data = data
+        self.reverse = reverse
+        self.content_name = content_name
+
+        if reverse:
+            self.conv: Conversation = get_conv_template("vicuna_v1.1_reverse")
+        else:
+            self.conv: Conversation = get_conv_template("vicuna_v1.1")
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        ins = self.data[idx]
+        self.conv.messages.clear()
+        self.conv.append_message(self.conv.roles[0], ins[self.content_name])
+        self.conv.append_message(self.conv.roles[1], None)
+        prompt = self.conv.get_prompt()
+        return prompt
+
+    def get_all(self):
+        return [self[i] for i in range(len(self))]
+
+
+class CollateFnWithTokenization:
+    def __init__(self, tokenizer: PreTrainedTokenizer, max_seq_len: int = 2048) -> None:
+        self.tokenizer = tokenizer
+        self.max_seq_len = max_seq_len
+
+    def __call__(self, batch):
+        outputs = self.tokenizer(
+            batch,
+            return_tensors="pt",
+            max_length=self.max_seq_len,
+            padding=True,
+            truncation=True,
+        )
+        return outputs

@@ -70,7 +70,9 @@ The pre-trained $M_{yx}$ is available at [Huggingface](https://huggingface.co/Sp
 
 ### Self-Augmentation via $M_{yx}$
 
-
+```bash
+$ bash scripts/self_aug.sh
+```
 
 ### Train Seed Model $M_{0}$
 
@@ -84,7 +86,9 @@ The pre-trained $M_{0}$ is available at [Huggingface](https://huggingface.co/Spi
 
 ### Self-Curation Prompting
 
-
+```bash
+$ bash scripts/self_curation.sh
+```
 
 ### Train Models $M_{i}$
 
@@ -94,9 +98,9 @@ Most hyper parameters are the same as $M_{yx}$ except for the number of steps (t
 | :---- | :---- |
 | Steps | 1400  |
 
-
 ```bash
-
+# change the `--data_path` in `scripts/train_seed.sh`
+$ bash scripts/train_seed.sh
 ```
 
 ## 📑 Experimental Results
@@ -108,7 +112,7 @@ Other models: [HuggingFaceH4/open_llm_leaderboard](https://huggingface.co/spaces
 | Llama-2-7b      |   54.32 | 53.07 |     78.59 | 46.87 |      38.76 |
 | Llama-2-7b-chat |   56.34 | 52.90 |     78.55 | 48.32 |      45.57 |
 | Vicuna-7b-v1.3  |   55.62 | 50.43 |     76.92 | 48.14 |      47.01 |
-| Humback $M_{0}$ |         | 56.31 |     81.20 |       |      47.59 |
+| Humback $M_{0}$ |   58.13 | 56.31 |     81.20 | 47.45 |      47.59 |
 | Humback $M_{1}$ |         |       |           |       |            |
 | Humback $M_{2}$ |         |       |           |       |            |
 
@@ -116,6 +120,7 @@ Other models: [HuggingFaceH4/open_llm_leaderboard](https://huggingface.co/spaces
 
 - Paper: [Self-Alignment with Instruction Backtranslation](https://arxiv.org/pdf/2308.06259.pdf)
 - Code: [FastChat](https://github.com/lm-sys/FastChat)
+- Code: [vLLM](https://github.com/vllm-project/vllm)
 - Code: [stanford_alpaca](https://github.com/tatsu-lab/stanford_alpaca)
 - Code: [transformers](https://huggingface.co/transformers/)
 

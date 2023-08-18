@@ -5,6 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "src.core.predict_vllm",
+            "type": "python",
+            "request": "launch",
+            "module": "src.core.predict_vllm",
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "7"
+            },
+            "args": [
+                "--model_path=/dev/shm/tzhu/outputs/forward_model_on_seed_data_scheduled",
+                "--data_filepath=data/seed/seed.jsonl",
+                "--save_filepath=outputs/seed_pred.jsonl",
+                "--prompt_column_name=instruction",
+                "--tensor_parallel_size=1"
+            ],
+            "justMyCode": false
+        },
+        {
             "name": "src.core.predict",
             "type": "python",
             "request": "launch",
