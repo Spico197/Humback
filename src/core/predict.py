@@ -9,11 +9,26 @@ from transformers import (
     PreTrainedTokenizer,
     AutoModelForCausalLM,
     AutoTokenizer,
-    default_data_collator,
 )
 from fastchat.model import get_conversation_template
 
 from src.utils.io import load_jsonlines, dump_jsonlines
+
+
+class CollateFn:
+    def __init__(self, tokenizer: PreTrainedTokenizer, max_seq_len: int = 2048) -> None:
+        self.tokenizer = tokenizer
+        self.max_seq_len = max_seq_len
+
+    def __call__(self, batch):
+        outputs = self.tokenizer(
+            batch,
+            return_tensors="pt",
+            max_length=self.max_seq_len,
+            padding=True,
+            truncation=True,
+        )
+        return outputs
 
 
 class InferenceDataset(Dataset):
@@ -45,21 +60,17 @@ class InferenceDataset(Dataset):
         self.conv.append_message(self.conv.roles[0], ins[self.content_name])
         self.conv.append_message(self.conv.roles[1], None)
         prompt = self.conv.get_prompt()
-        inputs = self.tokenizer(
-            [prompt],
-            return_tensors="pt",
-            truncation=True,
-            max_length=self.max_seq_len,
-            padding="max_length",
-        )
-        return inputs
+        return prompt
 
 
 @torch.inference_mode()
 def main(args):
     accelerator = Accelerator(mixed_precision=args.mixed_precision)
 
-    tokenizer = AutoTokenizer.from_pretrained(args.model_path)
+    tokenizer = AutoTokenizer.from_pretrained(args.model_path, padding_side="left")
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+        tokenizer.pad_token_id = tokenizer.eos_token_id
     model = AutoModelForCausalLM.from_pretrained(args.model_path)
     model.half()
 
@@ -78,7 +89,7 @@ def main(args):
     data_loader = DataLoader(
         dataset,
         batch_size=args.batch_size,
-        collate_fn=default_data_collator,
+        collate_fn=CollateFn(tokenizer),
         shuffle=False,
     )
 
@@ -122,7 +133,7 @@ if __name__ == "__main__":
     parser.add_argument("--temperature", type=float, default=0.7)
     parser.add_argument("--top_p", type=float, default=0.9)
     parser.add_argument("--repetition_penalty", type=float, default=1.0)
-    parser.add_argument("--max-new-tokens", type=int, default=512)
+    parser.add_argument("--max_new_tokens", type=int, default=512)
     parser.add_argument("--data_filepath", type=str)
     parser.add_argument("--save_filepath", type=str)
     parser.add_argument("--prompt_column_name", type=str, default="instruction")

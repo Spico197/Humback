@@ -108,7 +108,7 @@ Other models: [HuggingFaceH4/open_llm_leaderboard](https://huggingface.co/spaces
 | Llama-2-7b      |   54.32 | 53.07 |     78.59 | 46.87 |      38.76 |
 | Llama-2-7b-chat |   56.34 | 52.90 |     78.55 | 48.32 |      45.57 |
 | Vicuna-7b-v1.3  |   55.62 | 50.43 |     76.92 | 48.14 |      47.01 |
-| Humback $M_{0}$ |         | 56.31 |           |       |      47.59 |
+| Humback $M_{0}$ |         | 56.31 |     81.20 |       |      47.59 |
 | Humback $M_{1}$ |         |       |           |       |            |
 | Humback $M_{2}$ |         |       |           |       |            |
 

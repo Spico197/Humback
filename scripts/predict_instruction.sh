@@ -1,8 +1,10 @@
 # TODO: to add inference executive file with multiple GPUs
 #!/usr/bin/bash
 
+export CUDA_VISIBLE_DEVICES=7
+
 num_nodes=1
-num_gpu_per_node=2
+num_gpu_per_node=1
 
 bsz=4
 model_path="/dev/shm/tzhu/outputs/forward_model_on_seed_data_scheduled"

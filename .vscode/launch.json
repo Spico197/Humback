@@ -1,0 +1,26 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "src.core.predict",
+            "type": "python",
+            "request": "launch",
+            "module": "src.core.predict",
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "7"
+            },
+            "args": [
+                "--mixed_precision=bf16",
+                "--model_path=/dev/shm/tzhu/outputs/forward_model_on_seed_data_scheduled",
+                "--data_filepath=data/seed/seed.jsonl",
+                "--save_filepath=outputs/seed_pred.jsonl",
+                "--prompt_column_name=instruction",
+                "--batch_size=2"
+            ],
+            "justMyCode": false
+        }
+    ]
+}
