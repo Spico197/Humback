@@ -1,5 +1,24 @@
+import json
+
 import transformers
-from rex.utils.io import dump_jsonlines, load_jsonlines  # noqa: F401
+
+
+def dump_jsonlines(obj, filepath, **kwargs):
+    with open(filepath, "wt", encoding="utf-8") as fout:
+        for d in obj:
+            line_d = json.dumps(
+                d, ensure_ascii=False, **kwargs
+            )
+            fout.write("{}\n".format(line_d))
+
+
+def load_jsonlines(filepath, **kwargs):
+    data = list()
+    with open(filepath, "rt", encoding="utf-8") as fin:
+        for line in fin:
+            line_data = json.loads(line.strip())
+            data.append(line_data)
+    return data
 
 
 def safe_save_model_for_hf_trainer(trainer: transformers.Trainer, output_dir: str):
