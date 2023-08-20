@@ -164,5 +164,7 @@ debug.ipynb
 debug.json
 data/seed/*.jsonl
 data/unlabelled/*.jsonl
+data/curated/*.jsonl
 nohup.out
 outputs
+debug.sh

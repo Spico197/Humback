@@ -10,6 +10,7 @@ from src.utils.io import dump_jsonlines, load_jsonlines
 def main(args):
     data = load_jsonlines(args.data_filepath)
     regex = re.compile(r"[Ss]core:\s*(\d+)")
+    tgt_scores = list(map(int, args.scores.split(",")))
 
     scores = []
     qualified_results = []
@@ -33,7 +34,7 @@ def main(args):
             }
         )
         if isinstance(score, int) and score is not None:
-            if score >= args.min_score:
+            if score in tgt_scores:
                 qualified_results.append(
                     {
                         "instruction": raw["generated_instruction"],
@@ -54,7 +55,9 @@ if __name__ == "__main__":
     parser.add_argument("--middle_save_filepath", type=str)
     parser.add_argument("--save_filepath", type=str)
     parser.add_argument("--curation_response_column_name", type=str, default="response")
-    parser.add_argument("--min_score", type=int, default=5)
+    parser.add_argument(
+        "--scores", type=str, default="5", help="scores separated in `,`. e.g. `3,4,5`."
+    )
     args = parser.parse_args()
 
     main(args)

@@ -4,6 +4,10 @@ num_nodes=1
 num_gpu_per_node=8
 
 bsz=32
+# max_steps=500
+# data_path="data/seed/seed.jsonl"
+max_steps=765  # 21,301 curated instances (score=5) + 3,200 seed data for M1 training
+data_path="data/curated/m1.jsonl"
 output_dir="/dev/shm/tzhu/outputs/forward_model_on_seed_data_scheduled"
 
 mkdir -p $output_dir
@@ -15,7 +19,7 @@ torchrun \
     -m src.core.train_flash_attn \
         --deepspeed conf/ds_zero2default.json \
         --model_name_or_path /home/zhutong/Llama-2-7b-hf \
-        --data_path data/seed/seed.jsonl \
+        --data_path ${data_path} \
         --per_device_train_batch_size ${bsz_per_dev} \
         --per_device_eval_batch_size ${bsz_per_dev} \
         --adam_beta1 0.9 \
@@ -27,7 +31,7 @@ torchrun \
         --evaluation_strategy "no" \
         --logging_strategy steps \
         --logging_steps 1 \
-        --max_steps 500 \
+        --max_steps ${max_steps} \
         --save_strategy steps \
         --save_steps 100 \
         --save_total_limit 1 \

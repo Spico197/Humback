@@ -71,6 +71,7 @@ The pre-trained $M_{yx}$ is available at [Huggingface](https://huggingface.co/Sp
 ### Self-Augmentation via $M_{yx}$
 
 ```bash
+# Taking about 6:40:45 on the unlabelled data with 8*A100.
 $ bash scripts/self_aug.sh
 ```
 
@@ -88,6 +89,7 @@ The pre-trained $M_{0}$ is available at [Huggingface](https://huggingface.co/Spi
 
 ```bash
 $ bash scripts/self_curation.sh
+$ cat outputs/m1/unlabelled_curated_data.jsonl data/seed/seed.jsonl > data/curated/m1.jsonl
 ```
 
 ### Train Models $M_{i}$
@@ -123,6 +125,11 @@ Other models: [HuggingFaceH4/open_llm_leaderboard](https://huggingface.co/spaces
 - Code: [vLLM](https://github.com/vllm-project/vllm)
 - Code: [stanford_alpaca](https://github.com/tatsu-lab/stanford_alpaca)
 - Code: [transformers](https://huggingface.co/transformers/)
+
+## 📝 TODO
+
+- [ ] Run the second curation iteration.
+- [ ] Distinguish the seed data and the augmentation-curated data with different system prompts as described in the last paragraph of section 2.3.
 
 ## 📜 Reference
 
