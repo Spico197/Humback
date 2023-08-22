@@ -89,12 +89,22 @@ The pre-trained $M_{0}$ is available at [Huggingface](https://huggingface.co/Spi
 
 ### Self-Curation Prompting
 
-The curated data is available at [Huggingface](https://huggingface.co/datasets/Spico/Humback/blob/main/unlabelled_curated_data.jsonl) .
+The curated data is available at [Huggingface](https://huggingface.co/datasets/Spico/Humback/blob/main/m1_v2.jsonl) .
 
 ```bash
 # 33:54:45 with 8*A100 on 482,963 samples
 $ bash scripts/self_curation.sh
 # scores: [('None', 217203), ('4', 119211), ('3', 102756), ('5', 21301), ('1', 13083), ('2', 9288), ('8', 19), ('0', 15), ('9', 14), ('7', 11), ('6', 9), ('10', 4), ('91', 3), ('83', 2), ('20', 2), ('14', 2), ('75', 2), ('92', 2), ('72', 1), ('93', 1), ('28', 1), ('19', 1), ('728', 1), ('17', 1), ('16', 1), ('100', 1), ('237', 1), ('13', 1), ('73', 1), ('38', 1), ('87', 1), ('94', 1), ('98', 1), ('64', 1), ('52', 1), ('27', 1), ('24', 1), ('762', 1), ('266', 1), ('225', 1), ('80', 1), ('267', 1), ('99', 1), ('90', 1), ('63', 1), ('97', 1), ('78', 1), ('40', 1), ('1986', 1), ('47', 1), ('66', 1), ('45', 1), ('10502', 1), ('21', 1)]
+# Number of qualified results (scores=5): 21301/482963
+# instruction len: 198 ± 351
+# response len: 1601 ± 345
+# ---------------------------------------
+# v2: (Strict Curation Score Matching: add `$` to the matching regex):
+# Scores: [('None', 322324), ('3', 71851), ('4', 53120), ('5', 16460), ('1', 11921), ('2', 7260), ('0', 10), ('7', 4), ('6', 3), ('19', 1), ('8', 1), ('16', 1), ('13', 1), ('10', 1), ('23', 1), ('9', 1), ('90', 1), ('92', 1), ('45', 1)]
+# Number of qualified results (scores=5): 15521/482963
+# instruction len: 124 ± 113
+# response len: 1611 ± 345
+# ---------------------------------------
 $ cat outputs/m1/unlabelled_curated_data.jsonl data/seed/seed.jsonl > data/curated/m1.jsonl
 ```
 
@@ -119,6 +129,7 @@ Other models: [HuggingFaceH4/open_llm_leaderboard](https://huggingface.co/spaces
 | Humback $M_{0}$                                            |   58.13 | 56.31 |     81.20 | 47.45 |      47.59 |
 | Humback $M_{1,\text{w/o DiffSysPrompt,TemplateVicuna1.1}}$ |   55.85 | 52.82 |     78.53 | 45.86 |      46.21 |
 | Humback $M_{1}$                                            |   54.65 | 52.99 |     78.57 | 45.48 |      41.54 |
+| Humback $M_{1,\text{StrictCurationScoreMatching}}$         |         | 53.50 |           |       |      39.83 |
 
 The results and the trend are not as good as the original paper, but the performance of $M_{0}$ is better than vanilla llama2-7b.
 Specifically, Humback $M_{1}$ is worse than $M_{0}$, and the different system prompts seem not be helpful on these benchmarks.
@@ -150,6 +161,11 @@ HumbackM1                 23.35            1.49      805        1522
 ```
 
 🔥 Further discussions are fully welcomed.
+
+## 📝 TODO
+
+- [ ] train more steps on $M_{i}$.
+- [ ] remove system prompts when training $M_{0}$, $M_{i}$ and $M_{yx}$.
 
 ## 💌 Acknowledgments
 

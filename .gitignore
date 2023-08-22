@@ -162,13 +162,14 @@ cython_debug/
 
 debug.ipynb
 debug.json
+debug.py
+debug.sh
+nohup.out
 data/seed/*.jsonl
 data/unlabelled/*.jsonl
 data/curated/*.jsonl
 data/alpaca_eval/*.jsonl
-nohup.out
-outputs
-debug.sh
-debug.json
+outputs/
 results/**/leaderboard.csv
 results/**/annotations.json
+instruction_len*.png

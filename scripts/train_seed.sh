@@ -7,9 +7,12 @@ bsz=32
 # max_steps=500
 # data_path="data/seed/seed.jsonl"
 # output_dir="/dev/shm/tzhu/outputs/forward_model_on_seed_data_scheduled"
-max_steps=765  # 21,301 curated instances (score=5) + 3,200 seed data for M1 training
-data_path="data/curated/m1.jsonl"
-output_dir="/dev/shm/tzhu/Humback/models/m1_with_diff_sys_prompt"
+# max_steps=765  # 21,301 curated instances (score=5) + 3,200 seed data for M1 training
+# data_path="data/curated/m1.jsonl"
+# output_dir="/dev/shm/tzhu/Humback/models/m1_with_diff_sys_prompt"
+max_steps=600
+data_path=data/curated/m1_v2.jsonl
+output_dir="/dev/shm/tzhu/Humback/models/m1_strict_score_matching"
 
 mkdir -p $output_dir
 bsz_per_dev=$(echo "${bsz} / ${num_nodes} / ${num_gpu_per_node}" | bc)
