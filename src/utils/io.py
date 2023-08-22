@@ -23,6 +23,20 @@ def load_jsonlines(filepath, **kwargs):
     return data
 
 
+def load_json(filepath, **kwargs):
+    with open(filepath, "rt", encoding="utf-8") as fin:
+        data = json.load(fin, **kwargs)
+    return data
+
+
+def dump_json(obj, filepath, **kwargs):
+    path = Path(filepath)
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(filepath, "wt", encoding="utf-8") as fout:
+        json.dump(obj, fout, ensure_ascii=False, **kwargs)
+
+
 def safe_save_model_for_hf_trainer(trainer: transformers.Trainer, output_dir: str):
     """Collects the state dict and dump to disk."""
     state_dict = trainer.model.state_dict()

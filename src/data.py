@@ -15,23 +15,34 @@ def preprocess(
 ) -> dict:
     if reverse:
         conv = get_conv_template("vicuna_v1.1_reverse")
+        aug_conv = conv
     else:
-        conv = get_conv_template("vicuna_v1.1")
+        conv = get_conv_template("vicuna_v1.1_seed")
+        aug_conv = get_conv_template("vicuna_v1.1_aug")
+    assert conv.roles == aug_conv.roles
+    assert conv.sep == aug_conv.sep
+    assert conv.sep2 == aug_conv.sep2
+
     roles = {"human": conv.roles[0], "gpt": conv.roles[1]}
 
     # Apply prompt templates
     conversations = []
     for i, source in enumerate(sources):
-        if roles[source[0]["from"]] != conv.roles[0]:
+        conv_src = source["source"]
+        if conv_src == "aug":
+            _conv = aug_conv
+        else:
+            _conv = conv
+        if roles[source["conversations"][0]["from"]] != _conv.roles[0]:
             # Skip the first one if it is not from human
-            source = source[1:]
+            source["conversations"] = source["conversations"][1:]
 
-        conv.messages = []
-        for j, sentence in enumerate(source):
+        _conv.messages = []
+        for j, sentence in enumerate(source["conversations"]):
             role = roles[sentence["from"]]
-            assert role == conv.roles[j % 2], f"{i}"
-            conv.append_message(role, sentence["value"])
-        conversations.append(conv.get_prompt())
+            assert role == _conv.roles[j % 2], f"{i}"
+            _conv.append_message(role, sentence["value"])
+        conversations.append(_conv.get_prompt())
 
     # Tokenize conversations
     input_ids = tokenizer(
@@ -89,8 +100,13 @@ def preprocess(
 def convert_inst_resp_pairs_into_fastchat(ins: dict, reverse: bool = False) -> dict:
     inst = ins["instruction"] if not reverse else ins["response"]
     resp = ins["response"] if not reverse else ins["instruction"]
+    if "score" in ins:
+        source = "aug"
+    else:
+        source = "seed"
     return {
         "id": "",
+        "source": source,
         "conversations": [
             {"from": "human", "value": inst},
             {"from": "gpt", "value": resp},
@@ -111,9 +127,7 @@ class SupervisedDataset(Dataset):
 
         rank0_print("Formatting inputs...")
         sources = [
-            convert_inst_resp_pairs_into_fastchat(example, reverse=reverse)[
-                "conversations"
-            ]
+            convert_inst_resp_pairs_into_fastchat(example, reverse=reverse)
             for example in raw_data
         ]
         data_dict = preprocess(sources, tokenizer, reverse=reverse)
@@ -162,7 +176,7 @@ class LazySupervisedDataset(Dataset):
             [
                 convert_inst_resp_pairs_into_fastchat(
                     self.raw_data[i], reverse=self.reverse
-                )["conversations"]
+                )
             ],
             self.tokenizer,
             reverse=self.reverse,

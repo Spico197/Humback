@@ -165,6 +165,10 @@ debug.json
 data/seed/*.jsonl
 data/unlabelled/*.jsonl
 data/curated/*.jsonl
+data/alpaca_eval/*.jsonl
 nohup.out
 outputs
 debug.sh
+debug.json
+results/**/leaderboard.csv
+results/**/annotations.json
