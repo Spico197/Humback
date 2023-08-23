@@ -121,15 +121,16 @@ $ bash scripts/train_seed.sh
 
 Other models: [HuggingFaceH4/open_llm_leaderboard](https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard) .
 
-| Model                                                      | Average |   ARC | HellaSwag |  MMLU | TruthfulQA |
-| :--------------------------------------------------------- | ------: | ----: | --------: | ----: | ---------: |
-| Llama-2-7b                                                 |   54.32 | 53.07 |     78.59 | 46.87 |      38.76 |
-| Llama-2-7b-chat                                            |   56.34 | 52.90 |     78.55 | 48.32 |      45.57 |
-| Vicuna-7b-v1.3                                             |   55.62 | 50.43 |     76.92 | 48.14 |      47.01 |
-| Humback $M_{0}$                                            |   58.13 | 56.31 |     81.20 | 47.45 |      47.59 |
-| Humback $M_{1,\text{w/o DiffSysPrompt,TemplateVicuna1.1}}$ |   55.85 | 52.82 |     78.53 | 45.86 |      46.21 |
-| Humback $M_{1}$                                            |   54.65 | 52.99 |     78.57 | 45.48 |      41.54 |
-| Humback $M_{1,\text{StrictCurationScoreMatching}}$         |         | 53.50 |           |       |      39.83 |
+| Model                                                                                            | Average |   ARC | HellaSwag |  MMLU | TruthfulQA |
+| :----------------------------------------------------------------------------------------------- | ------: | ----: | --------: | ----: | ---------: |
+| Llama-2-7b                                                                                       |   54.32 | 53.07 |     78.59 | 46.87 |      38.76 |
+| Llama-2-7b-chat                                                                                  |   56.34 | 52.90 |     78.55 | 48.32 |      45.57 |
+| Vicuna-7b-v1.3                                                                                   |   55.62 | 50.43 |     76.92 | 48.14 |      47.01 |
+| Humback $M_{0}$                                                                                  |   58.13 | 56.31 |     81.20 | 47.45 |      47.59 |
+| Humback $M_{1}$                                                                                  |   54.65 | 52.99 |     78.57 | 45.48 |      41.54 |
+| Humback $M_{1,\text{w/o DiffSysPrompt,TemplateVicuna1.1}}$                                       |   55.85 | 52.82 |     78.53 | 45.86 |      46.21 |
+| Humback $M_{1,\text{w/o DiffSysPrompt,TemplateVicuna1.1,StrictCurationScoreMatching}}$           |   54.26 | 53.50 |     78.52 | 45.19 |      39.83 |
+| Humback $M_{1,\text{w/o DiffSysPrompt,TemplateVicuna1.1,StrictCurationScoreMatching,1200steps}}$ |   56.67 | 56.23 |     81.10 | 46.46 |      42.89 |
 
 The results and the trend are not as good as the original paper, but the performance of $M_{0}$ is better than vanilla llama2-7b.
 Specifically, Humback $M_{1}$ is worse than $M_{0}$, and the different system prompts seem not be helpful on these benchmarks.

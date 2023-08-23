@@ -10,9 +10,9 @@ bsz=32
 # max_steps=765  # 21,301 curated instances (score=5) + 3,200 seed data for M1 training
 # data_path="data/curated/m1.jsonl"
 # output_dir="/dev/shm/tzhu/Humback/models/m1_with_diff_sys_prompt"
-max_steps=600
+max_steps=1800
 data_path=data/curated/m1_v2.jsonl
-output_dir="/dev/shm/tzhu/Humback/models/m1_strict_score_matching"
+output_dir="/dev/shm/tzhu/Humback/models/m1_strict_score_matching_1800steps"
 
 mkdir -p $output_dir
 bsz_per_dev=$(echo "${bsz} / ${num_nodes} / ${num_gpu_per_node}" | bc)
@@ -35,10 +35,6 @@ torchrun \
         --evaluation_strategy "no" \
         --logging_strategy steps \
         --logging_steps 1 \
-        --max_steps ${max_steps} \
-        --save_strategy steps \
-        --save_steps 100 \
-        --save_total_limit 1 \
         --output_dir ${output_dir} \
         --overwrite_output_dir \
         --ddp_timeout 30000 \
@@ -49,4 +45,8 @@ torchrun \
         --gradient_checkpointing \
         --report_to none \
         --log_level info \
-        --lazy_preprocess True
+        --lazy_preprocess True \
+        --save_total_limit 1 \
+        --max_steps ${max_steps} \
+        --save_strategy steps \
+        --save_steps 100
