@@ -131,6 +131,8 @@ Other models: [HuggingFaceH4/open_llm_leaderboard](https://huggingface.co/spaces
 | Humback $M_{1,\text{w/o DiffSysPrompt,TemplateVicuna1.1}}$                                       |   55.85 | 52.82 |     78.53 | 45.86 |      46.21 |
 | Humback $M_{1,\text{w/o DiffSysPrompt,TemplateVicuna1.1,StrictCurationScoreMatching}}$           |   54.26 | 53.50 |     78.52 | 45.19 |      39.83 |
 | Humback $M_{1,\text{w/o DiffSysPrompt,TemplateVicuna1.1,StrictCurationScoreMatching,1200steps}}$ |   56.67 | 56.23 |     81.10 | 46.46 |      42.89 |
+| Humback $M_{1,\text{w/o DiffSysPrompt,TemplateVicuna1.1,StrictCurationScoreMatching,1800steps}}$ |   57.58 | 57.68 |     81.78 | 46.13 |      44.74 |
+| Humback $M_{1,\text{w/o DiffSysPrompt,TemplateVicuna1.1,StrictCurationScoreMatching,2400steps}}$ |   56.96 | 55.89 |     80.83 | 45.84 |      45.30 |
 
 The results and the trend are not as good as the original paper, but the performance of $M_{0}$ is better than vanilla llama2-7b.
 Specifically, Humback $M_{1}$ is worse than $M_{0}$, and the different system prompts seem not be helpful on these benchmarks.
